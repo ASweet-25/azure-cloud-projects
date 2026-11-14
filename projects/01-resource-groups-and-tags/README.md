@@ -1,6 +1,6 @@
 # Project 01 — Resource Groups and Tags
 
-**Status: In progress**
+**Status: Completed — November 14, 2026**
 
 ## Goal
 
@@ -76,12 +76,20 @@ Expected final result: `false`.
 
 ## My learning notes
 
-To fill in after completing the lab:
+- **What I learned:** I found using Azure CLI in Bash easier than navigating the GUI for this lab. I can see how repeatable commands would help with routine tasks in an enterprise environment.
+- **Issues:** I ran into no issues.
+- **Cleanup:** Successful, based on my lab completion notes. A cleanup screenshot is not included.
+- **Cost takeaway:** Tags organize resources; removing tags does not stop charges. Billable resources must be deleted when they are no longer needed.
 
-- **What I learned:**
-- **Any issue I ran into and how I fixed it:**
-- **Cleanup result:**
-- **Screenshot:** Add a screenshot of the group and tags, with account details hidden.
+## Screenshots
+
+The portal shows the resource group's original tags:
+
+![Resource group tags in Azure Portal](screenshots/portal-tags.png)
+
+Azure CLI shows the group in East US with a successful provisioning state and the added `CostCenter=Training` tag:
+
+![Azure CLI validation and CostCenter tag](screenshots/cli-validation.png)
 
 ## Cost note
 

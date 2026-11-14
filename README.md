@@ -8,6 +8,6 @@ Each project includes a short description, the steps I practiced, and notes abou
 
 | Project | What I'm practicing | Status |
 |---|---|---|
-| [01 — Resource Groups and Tags](projects/01-resource-groups-and-tags/README.md) | Creating and organizing Azure resources with Azure CLI | In progress |
+| [01 — Resource Groups and Tags](projects/01-resource-groups-and-tags/README.md) | Creating and organizing Azure resources with Azure CLI | Completed |
 
 I'll add more projects as I learn.
