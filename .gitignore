@@ -1,0 +1,21 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+.azure/
+*.pem
+*.key
+*.pfx
+*.p12
+*.publishsettings
+# Terraform state and local artifacts
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+*.tfplan
+# Local evidence exports may contain identifiers
+evidence-private/
+*.log
+.DS_Store
