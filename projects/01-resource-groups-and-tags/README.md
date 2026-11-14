@@ -1,86 +1,92 @@
-# 01 — Azure Resource Groups and Tags
+# Project 01 — Resource Groups and Tags
 
-**Status:** In progress. Deployment, tag validation, and cleanup have not yet been confirmed. Scripts are provided for the learner to run; no Azure execution is claimed.
+**Status: In progress**
 
-## Business scenario and objective
+## Goal
 
-Prepare a dedicated container for an IT training environment. Apply ownership and environment labels so future resources can be organized and reviewed consistently. Demonstrate subscription selection, Azure CLI use, tagging, and verified teardown.
+Learn how to create an Azure resource group, add tags, check the configuration, and delete the group when finished.
 
-A resource group is like a project folder; tags are labels on that folder. It is not an Active Directory group, and resource-group tags do not automatically propagate to resources.
+A resource group is like a folder for related Azure resources. Tags are labels that help identify their purpose and owner.
 
-| Scope | Configuration |
-|---|---|
-| Subscription | Your selected lab subscription |
-| Dedicated resource group | `rg-azlab-foundations-01` |
-| Group metadata location | `eastus` |
-| Tags | `Owner=Anthony Environment=Lab Project=AzureFoundations` |
-| Workloads | None |
+## Tools
 
-The group's location stores group metadata; resources added later can have their own locations.
+- Azure Portal
+- Azure Cloud Shell — Bash
+- Azure CLI
 
-## Prerequisites
+## Lab steps
 
-An Azure subscription, permission to create/tag/delete resource groups, and Azure CLI. Use Azure Portal Cloud Shell **Bash** with **No storage account required**, or Bash locally with Azure CLI installed and `az login` completed. Never paste credentials into documentation.
+Open Cloud Shell in the Azure Portal and select **Bash**. Choose **No storage account required** if prompted.
 
-## Run the lab
-
-In Cloud Shell Bash or local Bash:
+### 1. Check the subscription
 
 ```bash
-git clone https://github.com/ASweet-25/azure-cloud-projects.git
-cd azure-cloud-projects
-az account list --output table
+az account show --output table
+```
+
+If needed, select your lab subscription:
+
+```bash
 az account set --subscription "<YOUR-LAB-SUBSCRIPTION-ID>"
-az account show --query "{Name:name,Subscription:id}" --output table
-
-bash projects/01-resource-groups-and-tags/scripts/deploy.sh "<YOUR-LAB-SUBSCRIPTION-ID>"
-bash projects/01-resource-groups-and-tags/scripts/validate.sh "<YOUR-LAB-SUBSCRIPTION-ID>"
 ```
 
-Expected deployment result: group provisioning state `Succeeded`. Validation checks the location, required tags, and absence of workloads. The deployment script refuses to modify an existing group with this name.
-
-## Independent challenge
-
-In the portal, add `CostCenter=Training` to the group's tags. Run validation again and inspect the printed tags. Explain why adding a tag does not grant access.
-
-## Troubleshooting
-
-| Symptom | Investigation |
-|---|---|
-| AuthorizationFailed | Confirm the subscription and ask the subscription administrator to review your permitted scope. |
-| Group name already exists | Inspect it; use another dedicated name consistently instead of changing shared resources. |
-| Validation fails | Inspect group location/tags; extra resources are deliberately rejected by this empty-group lab. |
-| Deletion fails | Check locks, permissions, and the CLI error. Do not delete unrelated locks or resources. |
-
-## Security and cost decisions
-
-No workloads, credentials, role assignments, or public endpoints are created. Use only a dedicated training group. An empty group has no workload runtime; this lab does not deploy compute, storage, logs, backup, or networking resources. Existing subscriptions/resources can still incur costs.
-
-Use ephemeral Cloud Shell to avoid provisioning shell storage. Its files disappear when the session ends; commit approved evidence before ending it. A $100 monthly lab budget is a planning target, not a hard spending limit. Budget notifications can be delayed and do not stop resources automatically. Before future paid projects, review active labs and configure Cost Management budget alerts.
-
-## Evidence and completion
-
-Use [evidence.md](evidence.md) to record actual results. Redact subscription/tenant IDs, account details, and other sensitive information before publishing screenshots. Do not upload raw account exports.
-
-After evidence is recorded, run cleanup:
+### 2. Check the name and create the group
 
 ```bash
-bash projects/01-resource-groups-and-tags/scripts/cleanup.sh "<YOUR-LAB-SUBSCRIPTION-ID>"
+az group exists --name rg-azlab-foundations-01
 ```
 
-The script displays the selected subscription and exact group, refuses to delete nonempty groups, requires the group name as confirmation, waits for deletion, and verifies absence. It removes only this empty group. No backup or soft-delete resources are created by this lab. Existing shell storage, other groups, budgets, and subscription-level objects are outside its scope; review those separately. Billing information may arrive later.
+Continue only if the result is `false`. If the name already exists, choose a different dedicated lab name and use it in every command below.
 
-## Reflection and interview practice
+```bash
+az group create \
+  --name rg-azlab-foundations-01 \
+  --location eastus \
+  --tags Owner=Anthony Environment=Lab Project=AzureFoundations
+```
 
-1. How do subscriptions and resource groups differ?
-2. What does a tag do?
-3. Why verify subscription context before deletion?
-4. Where would you investigate an authorization failure?
-5. Why does a budget alert not guarantee a spending cap?
+### 3. Check the group and tags
 
-Explain the scenario, the checks you performed, and your actual outcome. Resume accomplishments and a website case study should be written only after evidence is available.
+```bash
+az group show \
+  --name rg-azlab-foundations-01 \
+  --query "{Name:name,Location:location,State:properties.provisioningState,Tags:tags}" \
+  --output json
+```
 
-## Official references
+Expected: location `eastus`, state `Succeeded`, and the three tags.
 
-- [Resource group CLI reference](https://learn.microsoft.com/en-us/cli/azure/group?view=azure-cli-latest)
-- [Ephemeral Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/get-started/ephemeral)
+### 4. Clean up
+
+Confirm the correct subscription and check that the lab group is empty:
+
+```bash
+az account show --output table
+az resource list --resource-group rg-azlab-foundations-01 --output table
+```
+
+If the group is empty and belongs to this lab, delete it. Review the group name at the confirmation prompt:
+
+```bash
+az group delete --name rg-azlab-foundations-01
+az group exists --name rg-azlab-foundations-01
+```
+
+Expected final result: `false`.
+
+## My learning notes
+
+To fill in after completing the lab:
+
+- **What I learned:**
+- **Any issue I ran into and how I fixed it:**
+- **Cleanup result:**
+- **Screenshot:** Add a screenshot of the group and tags, with account details hidden.
+
+## Cost note
+
+This lab creates an empty resource group with no paid workloads. Existing resources or Cloud Shell storage can still incur charges. Only delete the dedicated lab group.
+
+## Reference
+
+[Microsoft Learn — Azure resource group commands](https://learn.microsoft.com/en-us/cli/azure/group?view=azure-cli-latest)
