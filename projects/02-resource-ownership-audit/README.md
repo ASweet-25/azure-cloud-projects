@@ -2,13 +2,17 @@
 
 **Status: In progress**
 
-## Business scenario
+## Project overview
 
-A support team inherited an Azure subscription and needs to know who owns each workload and which cost center it belongs to. This lab uses PowerShell to find missing tags, apply an approved fix, and report the unresolved ownership gap for follow-up.
+When an application goes down, the support team needs to know who to call. I built this lab around an Azure subscription where some resource groups were missing an owner, an environment, or a cost center.
 
-## Run the lab
+I wrote a PowerShell script that checks those three fields and produces a report I can export to CSV. In the lab, a simulated application registry confirms Inventory’s owner and cost center. The script can preview that specific fix, then apply it while preserving the group’s existing tags. Legacy stays on the report for follow-up because its owner still needs to be confirmed.
 
-Use PowerShell 7 with Az PowerShell in VS Code, or Azure Cloud Shell in PowerShell mode. Sign in with `Connect-AzAccount` if needed. Run from this project folder in a lab subscription where you can create, tag, and remove resource groups. The lab creates three empty resource groups.
+My success criteria are a before-and-after report that shows Inventory passing, its existing tags intact, and Legacy still flagged.
+
+## Reproduce the lab
+
+The lab uses three empty resource groups to represent Payroll, Inventory, and Legacy. To reproduce the setup, open this folder in PowerShell 7 with the Az modules installed, or use Azure Cloud Shell in PowerShell mode. Sign in with `Connect-AzAccount` if needed and select a lab subscription where you can create, tag, and delete resource groups.
 
 ```powershell
 # Select and verify the intended subscription before creating anything.
@@ -50,9 +54,7 @@ Import-Csv ./after.csv | Format-Table
 | Inventory | Missing Owner and CostCenter | Pass |
 | Legacy | Missing Owner | Escalate for ownership confirmation |
 
-Inventory should retain `Application=Inventory` and `Environment=Test`. The audit checks for required tags with nonblank values. The simulated application registry supplies the approved Inventory values. Resource group tags apply to the resource group itself.
-
-Record your observed results and cleanup status after running the lab. Review CSVs for sensitive details before sharing them.
+Inventory should retain `Application=Inventory` and `Environment=Test`. The audit checks whether the three required tags have values at the resource group level. I’ll add my observed results and cleanup status after running the lab in Azure.
 
 ## Cleanup
 
