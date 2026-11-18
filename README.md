@@ -9,6 +9,6 @@ Each project includes a short description, the steps I practiced, and notes abou
 | Project | What I'm practicing | Status |
 |---|---|---|
 | [01 — Resource Groups and Tags](projects/01-resource-groups-and-tags/README.md) | Creating and organizing Azure resources with Azure CLI | Completed |
-| [02 — Azure Resource Ownership Audit](projects/02-resource-ownership-audit/README.md) | Auditing and remediating resource group tags with Az PowerShell | Complete|
+| [02 — Azure Resource Ownership Audit](projects/02-resource-ownership-audit/README.md) | Auditing and remediating resource group tags with Az PowerShell | Completed |
 
 I'll add more projects as I learn.
