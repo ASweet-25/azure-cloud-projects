@@ -1,6 +1,6 @@
 # Project 02 — Azure Resource Ownership Audit
 
-**Status: In progress**
+**Complete**
 
 ## Project overview
 
