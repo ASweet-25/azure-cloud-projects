@@ -25,27 +25,9 @@ I am recreating a simplified version of that environment with:
 
 ## Architecture
 
-```text
-Remote / home environment                     Microsoft Azure — East US
-+--------------------------------+            +------------------------------------------+
-| MacBook Air (macOS)             |            | Resource group: rg-windows-lab           |
-|                                |            | VNet-WindowsLab: 10.10.0.0/16            |
-| UTM                             |            |                                          |
-|   PC01 — Windows 11 Pro          |--Tailscale-->| DC01 — Windows Server 2025               |
-|   User workstation (VM)          |            | SNet-Servers: 10.10.1.0/24              |
-|   Tailscale connected            |            | Private IP: 10.10.1.10                  |
-+--------------------------------+            | AD domain: corp.lab.test                 |
-                                              | AD DS + DNS                              |
-                                              | NSG-WindowsLab on DC01 NIC               |
-                                              | Standard Public IP for outbound access   |
-                                              |                                          |
-                                              | SNet-Users: 10.10.3.0/24                 |
-                                              | NSG-Users attached to user subnet        |
-                                              | (no Azure user VM deployed there)        |
-                                              +------------------------------------------+
-```
+![Current Architecture — Hybrid Azure Active Directory Lab](images/current-architecture-hybrid-azure-ad-lab.png)
 
-**Important:** PC01 is hosted on my Mac, not inside the Azure user subnet. Its Active Directory join is not complete yet. Tailscale peer connectivity works; private-IP routing and AD DNS testing are the current work.
+**Current setup:** PC01 is a Windows 11 Pro VM running locally on my Mac through UTM. It connects to DC01 in Azure over Tailscale. DC01 runs Windows Server 2025, Active Directory Domain Services, and DNS for `corp.lab.test`. The Azure user subnet is configured for future use; PC01 is not deployed inside it. The domain join is still in progress.
 
 ## What I've completed
 
