@@ -86,16 +86,6 @@ Remote / home environment                     Microsoft Azure — East US
 
 **Windows / hybrid:** Windows Server 2025, Active Directory Domain Services, DNS, PowerShell, Windows 11 ARM virtualization, Tailscale networking, and troubleshooting.
 
-## How I would explain this project in an interview
-
-> I'm a Windows systems administrator building my cloud skills through hands-on Azure projects. For this lab, I deployed Windows Server 2025 as a domain controller in Azure and built the supporting virtual network, subnet segmentation, and security rules. I ran into an outbound connectivity issue that prevented a software download, so I separated DNS troubleshooting from TCP connectivity testing, checked Azure's network configuration, and restored outbound access without opening internet-facing RDP.
->
-> I then set up Tailscale for private remote access, promoted the server into an Active Directory domain, and built a Windows workstation VM locally on my Mac. I'm now working on joining that remote workstation to the Azure-hosted domain and applying Group Policy. The purpose is to strengthen my ability to administer both traditional Windows infrastructure and cloud-hosted resources.
-
-## Cost and security notes
-
-I deallocate Azure VMs outside lab sessions to control compute charges. Disks, allocated public IPs, and any deployed Bastion service may still incur charges. I avoid opening public RDP and do not store passwords, authentication keys, or subscription secrets in this repository.
-
 ---
 
 *This is an active learning project. I update the documentation as I complete and verify each stage.*
