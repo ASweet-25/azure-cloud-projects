@@ -5,26 +5,27 @@
   Targets dc01, pc02, and optionally their dedicated public IP resources in RG-WINDOWS-LAB.
   - Stop: deallocates pc02 first, then dc01.
   - Start: restores selected public IPs if requested, starts dc01, checks AD/DNS, then starts pc02.
-  - Status: shows VM power states, public IPs, and retained disks.
+  - Status: shows VM power states, public IPs, retained disks, Boot Diagnostics, and lab storage accounts.
 
   Your disks, domain data, private IPs, NSGs, VNet, NICs and Tailscale installation are retained.
   Public IP deletion is OPTIONAL, not the default. The recreated public IPv4 may be different.
   pc02 public IP is created only when explicitly requested via -ManagePc02PublicIp.
 
 .EXAMPLE
-  ./Azure-WindowsLab-v3.ps1 -Action Status
+  ./Azure-WindowsLab-v4.ps1 -Action Status
 .EXAMPLE
-  ./Azure-WindowsLab-v3.ps1 -Action Stop -WhatIf
+  ./Azure-WindowsLab-v4.ps1 -Action Stop -WhatIf
 .EXAMPLE
-  ./Azure-WindowsLab-v3.ps1 -Action Stop
+  ./Azure-WindowsLab-v4.ps1 -Action Stop
 .EXAMPLE
-  ./Azure-WindowsLab-v3.ps1 -Action Stop -ManageDc01PublicIp -ManagePc02PublicIp -WhatIf
+  ./Azure-WindowsLab-v4.ps1 -Action Stop -ManageDc01PublicIp -ManagePc02PublicIp -WhatIf
 .EXAMPLE
-  ./Azure-WindowsLab-v3.ps1 -Action Stop -ManageDc01PublicIp -ManagePc02PublicIp
+  ./Azure-WindowsLab-v4.ps1 -Action Stop -ManageDc01PublicIp -ManagePc02PublicIp
 .EXAMPLE
-  ./Azure-WindowsLab-v3.ps1 -Action Start -ManageDc01PublicIp -ManagePc02PublicIp
+  ./Azure-WindowsLab-v4.ps1 -Action Start -ManageDc01PublicIp -ManagePc02PublicIp
 .NOTES
-  PowerShell 7, Az.Accounts, Az.Compute, Az.Network. Run on Mac in VS Code.
+  PowerShell 7, Az.Accounts, Az.Compute, Az.Network, Az.Storage. Run on Mac in VS Code.
+  Boot Diagnostics and storage checks are read-only; no automatic remediation or deletion.
   Connect-AzAccount and select the correct subscription first.
   Does not remove all Azure costs: disks, snapshots/backups, monitoring and other resources may bill.
   Only manage the IP after checking dc01 needs it for outbound Tailscale connectivity.
@@ -171,6 +172,35 @@ function Show-LabStatus {
     Get-AzDisk -ResourceGroupName $rg |
         Select-Object Name, DiskSizeGB, Sku, DiskState |
         Format-Table -AutoSize | Out-Host
+    # Detect diagnostic configuration drift without changing either VM.
+    Write-Host "`n=== Boot Diagnostics ===" -ForegroundColor Cyan
+    $diagnostics = foreach ($name in @($dcName, $pcName)) {
+        $vm = Get-AzVM -ResourceGroupName $rg -Name $name
+        $diag = $vm.DiagnosticsProfile.BootDiagnostics
+        $mode = if (-not $diag.Enabled) { 'Disabled' }
+                elseif ($diag.StorageUri) { 'Custom Storage' }
+                else { 'Azure Managed' }
+        [pscustomobject]@{ VM = $name; DiagnosticsMode = $mode }
+    }
+    $diagnostics | Format-Table -AutoSize | Out-Host
+    foreach ($item in $diagnostics) {
+        if ($item.DiagnosticsMode -ne 'Azure Managed') {
+            Write-Warning "$($item.VM): expected Azure-managed Boot Diagnostics. Review configuration."
+        }
+    }
+
+    # Check customer-managed storage in this lab only; Cloud Shell is outside scope.
+    Write-Host "`n=== Storage Accounts ===" -ForegroundColor Cyan
+    $accounts = @(Get-AzStorageAccount -ResourceGroupName $rg)
+    if ($accounts.Count -eq 0) {
+        Write-Host 'No customer-managed storage accounts in lab.' -ForegroundColor Green
+    } else {
+        $accounts | Select-Object StorageAccountName, Location,
+            @{Name='SKU';Expression={$_.Sku.Name}} |
+            Format-Table -AutoSize | Out-Host
+        Write-Warning 'Customer-managed storage found. Review dependencies and costs; do not delete automatically.'
+    }
+
     Write-Warning 'Deallocated compute stops VM compute charges, not disk, public IP, backup, storage or monitoring charges.'
 }
 
