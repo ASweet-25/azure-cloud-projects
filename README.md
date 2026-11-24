@@ -12,4 +12,6 @@ Each project includes a short description, the steps I practiced, and notes abou
 | [02 — Azure Resource Ownership Audit](projects/02-resource-ownership-audit/README.md) | Auditing and remediating resource group tags with Az PowerShell | Completed |
 | [03 — Hybrid Azure Active Directory Lab](projects/03-hybrid-azure-active-directory-lab/README.md) | Building a cloud domain controller, segmented networking and secure remote workstation connectivity | In progress |
 
+| [04 — CloudOps Guardian](projects/04-Cloudops-Gaurdian/README.md) | Azure resource auditing, cost optimization, configuration remediation and automation | In progress — Day 1 complete |
+
 I'll add more projects as I learn.
